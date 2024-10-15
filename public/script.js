@@ -6,7 +6,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBqE7hRr5WWffIWvewbqjaSIa13xICwYXk",
   authDomain: "life-project-id.firebaseapp.com",
   projectId: "life-project-id",
-  storageBucket: "life-project-id",
+  storageBucket: "life-project-id.appspot.com",
   messagingSenderId: "130068015450",
   appId: "1:130068015450:web:708fc3f159bb1211f82b63"
 };
@@ -41,7 +41,6 @@ document.getElementById("task-form").addEventListener("submit", async (e) => {
       name: taskName,
       priority: priority,
       startDate: startDate,
-       // Default % Completed to 0
       eta: taskETA
     });
 
@@ -57,8 +56,6 @@ document.getElementById("task-form").addEventListener("submit", async (e) => {
     console.error("Error saving task: ", error);
   }
 });
-
-
 
 // Show tasks button handling
 document.getElementById("show-tasks-button").addEventListener("click", () => {
@@ -88,7 +85,6 @@ document.getElementById("hide-completed-button").addEventListener("click", () =>
   document.getElementById("show-completed-button").style.display = "inline";
   document.getElementById("hide-completed-button").style.display = "none";
 });
-
 
 document.addEventListener("DOMContentLoaded", () => {
   // Show/Hide Completed Task List
@@ -153,7 +149,7 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
   categories.forEach((category) => {
     const sectionDiv = document.createElement("div");
     sectionDiv.classList.add("task-section");
-    sectionDiv.innerHTML = `<h3>${category}</h3><table class="task-table"><thead><tr><th>Task Name</th><th>Priority</th><th>Days Left</th><th>% Completed</th><th>Start Date</th><th>ETA</th><th>Action</th></tr></thead><tbody id="${category}-tasks"></tbody></table>`;
+    sectionDiv.innerHTML = `<h3>${category}</h3><table class="task-table"><thead><tr><th>Task Name</th><th>Priority</th><th>Days Left</th><th>Start Date</th><th>ETA</th><th>Action</th></tr></thead><tbody id="${category}-tasks"></tbody></table>`;
     taskSections.appendChild(sectionDiv);
 
     const tasks = tasksByCategory[category] || [];
@@ -174,44 +170,23 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
                             <option value="Low" ${task.priority === "Low" ? "selected" : ""}>Low</option>
                         </select></td>
                         <td class="days-left">${daysLeft} days</td>
-                        <td><div class="range-value">${task.completionPercentage}%</div><input type="range" value="${task.completionPercentage}" min="0" max="100" data-id="${task.id}" class="edit-completion"></td>
                         <td>${task.startDate}</td>
                         <td><input type="date" value="${task.eta}" data-id="${task.id}" class="edit-eta"></td>
-                        <td><button class="delete-task" data-id="${task.id}">Delete</button></td>`;
+                        <td><button class="mark-complete" data-id="${task.id}">Mark as Complete</button> <button class="delete-task" data-id="${task.id}">Delete</button></td>`;
         tbody.appendChild(tr);
-        setSliderColor(tr.querySelector(".edit-completion")); // Set initial color
       }
     });
   });
 
-  // Add event listeners to update completion percentage and change slider color
-  document.querySelectorAll(".edit-completion").forEach((input) => {
-    input.addEventListener("input", async (e) => {
+  // Add event listeners to mark tasks as complete
+  document.querySelectorAll(".mark-complete").forEach((button) => {
+    button.addEventListener("click", async (e) => {
       const taskId = e.target.getAttribute("data-id");
-      const newCompletion = e.target.value;
       const taskName = e.target.closest("tr").querySelector("td:nth-child(1)").textContent;
       const taskCategory = e.target.closest("tr").querySelector("td:nth-child(1)").dataset.category;
-
-      if (newCompletion == 100) {
-        const confirmation = confirm(`Confirm completing task "${taskName}"?`);
-        if (!confirmation) {
-          e.target.value = 99;  // Set it just below 100 if not confirmed
-          setSliderColor(e.target);
-          return;
-        }
-        // Move the task to completed tasks
-        moveTaskToCompleted(taskId, taskName, taskCategory);
-      } else {
-        try {
-          await updateDoc(doc(db, "tasks", taskId), {
-            
-          });
-          console.log("Task updated successfully!");
-        } catch (error) {
-          console.error("Error updating task: ", error);
-        }
-      }
-      setSliderColor(e.target);
+      const confirmation = confirm(`Confirm completing task "${taskName}"?`);
+      if (!confirmation) return;
+      moveTaskToCompleted(taskId, taskName, taskCategory);
     });
   });
 
@@ -230,7 +205,7 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
 
         // Update the Days Left dynamically
         const tr = e.target.closest("tr");
-        const startDate = tr.querySelector("td:nth-child(5)").textContent;
+        const startDate = tr.querySelector("td:nth-child(4)").textContent;
         const etaDate = new Date(newETA);
         const startDateDate = new Date(startDate);
         const daysLeft = Math.ceil((etaDate - startDateDate) / (1000 * 60 * 60 * 24));
@@ -339,34 +314,6 @@ function loadCompletedTasks() {
     }
   });
 }
-
-// Function to set the slider color based on completion percentage
-function setSliderColor(slider) {
-  const value = parseInt(slider.value);
-  const percentageLabel = slider.previousElementSibling; // Select the label above the slider
-  percentageLabel.textContent = `${value}%`; // Update label text
-
-  // Update the background color gradient
-  slider.style.background = `linear-gradient(to right, ${
-    value < 25 ? '#e74c3c' : value < 50 ? '#f39c12' : value < 75 ? '#f1c40f' : '#2ecc71'
-  } ${value}%, #ddd ${value}%)`;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("input[type='range']").forEach((slider) => {
-    // Create a label to display the percentage dynamically
-    const label = document.createElement('div');
-    label.classList.add('range-value');
-    label.textContent = `${slider.value}%`;
-    slider.parentNode.insertBefore(label, slider);
-
-     // Set initial color
-    slider.addEventListener("input", () => setSliderColor(slider)); // Change color on input change
-  });
-
-  // Load completed tasks on page load
-  loadCompletedTasks();
-});
 
 // Function to update the summary table with pending tasks count
 function updateSummary() {
