@@ -86,6 +86,11 @@ button:active {
   transition: background-color 0.3s ease;
 }
 
+.summary-table th:nth-child(2),
+.summary-table td:nth-child(2) {
+  text-align: center; /* Center-align the "Pending Tasks" column */
+}
+
 #show-tasks-button:hover, #hide-tasks-button:hover,
 #show-completed-button:hover, #hide-completed-button:hover,
 #show-summary-button:hover, #hide-summary-button:hover {
@@ -115,11 +120,11 @@ button:active {
   word-wrap: break-word;
 }
 
-.task-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
+/*.task-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}*/
 
-/* Delete Button Styling */
+/* Add margin to the Delete button */
 .delete-task {
   background-color: #d93025;
   color: white;
@@ -145,6 +150,8 @@ button:active {
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-bottom: 10px; /* Increase the distance between buttons */
+
 }
 
 .mark-complete:hover {
@@ -153,7 +160,7 @@ button:active {
 
 /* Completed Task Section Styling */
 #completed-task-list {
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 /* Summary Table Styling */
@@ -174,9 +181,9 @@ button:active {
   color: black;
 }
 
-.summary-table tr:nth-child(even) {
+/*.summary-table tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+}*/
 
 /* Ensure that the container does not overflow */
 .container {
@@ -235,4 +242,85 @@ button {
     width: 100%;
     margin-bottom: 10px;
   }
+}
+
+/* Highlight the task name with red */
+.task-name-highlight {
+  background-color: #fd9797; /* Light red highlighting */
+  padding: 3px; /* Add a bit of padding for visibility */
+  border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+/* Background colors for each task category */
+.task-category-finance {
+  background-color: #fa9aff; /* Light blue for Finance category */
+}
+
+.task-category-health-and-fitness {
+  background-color: #beed73; /* Light green for Health & Fitness category */
+}
+
+.task-category-travel-and-adventure {
+  background-color: #96fffd; /* Light orange for Travel & Adventure category */
+}
+
+.task-category-relationships {
+  background-color: #ffccd5; /* Light pink for Relationships category */
+}
+
+.task-category-home-and-living {
+  background-color: #d2a055; /* Light green for Home & Living category */
+}
+
+.task-category-personal-projects {
+  background-color: #ffffff; /* Light sky blue for Personal Projects category */
+}
+
+.task-category-learning-and-curiosity {
+  background-color: #fef9c3; /* Light yellow for Learning & Curiosity category */
+}
+
+.task-category-entertainment {
+  background-color: #fdb674; /* Light lavender for Entertainment category */
+}
+
+.task-category-spiritual-growth {
+  background-color: #789ccc; /* Light blue-gray for Spiritual Growth category */
+}
+
+/* Add borders to all task tables */
+.task-table, .summary-table {
+  border: 1px solid #ccc; /* Add a light grey border around the entire table */
+}
+
+.task-table th, .task-table td,
+.summary-table th, .summary-table td {
+  border: 1px solid #ccc; /* Add borders between cells */
+  padding: 12px; /* Keep the padding for better spacing */
+  vertical-align: middle; /* Ensure cell content is vertically aligned in the middle */
+}
+
+.task-table td.task-name {
+  font-weight: bold;
+}
+
+#button-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center; /* This will keep the buttons centered */
+}
+
+.summary-table {
+  table-layout: auto; /* Allow the table to determine the column width automatically based on the content */
+  width: auto; /* Prevents the table from taking unnecessary width */
+  border-collapse: collapse; /* Removes extra space between table cells */
+}
+
+.summary-table th, .summary-table td {
+  padding: 5px; /* Adds slight padding for a cleaner look */
+  text-align: left; /* Align text to the left */
+  border: 1px solid #ddd; /* Adds a light border to make it more readable */
+  white-space: nowrap; /* Prevents content from wrapping into multiple lines */
 }

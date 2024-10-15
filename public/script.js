@@ -15,15 +15,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' });
+  const year = date.getFullYear().toString().slice(-2);
+  
+  return `${day}-${month}-${year}`;
+}
+
 // Set default start date and ETA to today and 2 days from today respectively
 const startDateInput = document.getElementById("startDate");
 const today = new Date().toISOString().split('T')[0];
 startDateInput.value = today;
 
 const etaInput = document.getElementById("taskETA");
-const twoDaysFromNow = new Date();
-twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
-etaInput.value = twoDaysFromNow.toISOString().split('T')[0];
+const FiveDaysFromNow = new Date();
+FiveDaysFromNow.setDate(FiveDaysFromNow.getDate() + 5);
+etaInput.value = FiveDaysFromNow.toISOString().split('T')[0];
+
 
 // Form submission handling
 document.getElementById("task-form").addEventListener("submit", async (e) => {
@@ -52,6 +62,10 @@ document.getElementById("task-form").addEventListener("submit", async (e) => {
     // Reset the dropdown to their default values
     document.getElementById("taskCategory").selectedIndex = 0; // <Select Category>
     document.getElementById("priority").value = "Medium"; // Default priority to Medium
+
+    // Keep the Start Date and ETA as default values
+    startDateInput.value = today;
+    etaInput.value = FiveDaysFromNow.toISOString().split('T')[0];
   } catch (error) {
     console.error("Error saving task: ", error);
   }
@@ -78,6 +92,7 @@ document.getElementById("show-completed-button").addEventListener("click", () =>
   document.getElementById("completed-task-list").style.display = "block";
   document.getElementById("show-completed-button").style.display = "none";
   document.getElementById("hide-completed-button").style.display = "inline";
+  loadCompletedTasks(); // Load completed tasks when the button is clicked
 });
 
 document.getElementById("hide-completed-button").addEventListener("click", () => {
@@ -92,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("completed-task-section").style.display = "block";
     document.getElementById("show-completed-button").style.display = "none";
     document.getElementById("hide-completed-button").style.display = "inline";
+    loadCompletedTasks(); // Load completed tasks when the button is clicked
   });
 
   document.getElementById("hide-completed-button").addEventListener("click", () => {
@@ -113,6 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("show-summary-button").style.display = "inline";
     document.getElementById("hide-summary-button").style.display = "none";
   });
+
+  // Load completed tasks on page load
+  loadCompletedTasks();
 });
 
 // Display saved tasks by category with sorting by ETA
@@ -149,7 +168,7 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
   categories.forEach((category) => {
     const sectionDiv = document.createElement("div");
     sectionDiv.classList.add("task-section");
-    sectionDiv.innerHTML = `<h3>${category}</h3><table class="task-table"><thead><tr><th>Task Name</th><th>Priority</th><th>Days Left</th><th>Start Date</th><th>ETA</th><th>Action</th></tr></thead><tbody id="${category}-tasks"></tbody></table>`;
+    sectionDiv.innerHTML = `<h3>${category}</h3><table class="task-table"><thead><tr><th>Task Name</th><th>Priority</th><th>Days Left</th><th>Start Date</th><th>End Date</th><th>Action</th></tr></thead><tbody id="${category}-tasks"></tbody></table>`;
     taskSections.appendChild(sectionDiv);
 
     const tasks = tasksByCategory[category] || [];
@@ -159,20 +178,43 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
       const tbody = document.getElementById(`${category}-tasks`);
       if (tbody) {
         const etaDate = new Date(task.eta);
-        const startDateDate = new Date(task.startDate);
-        const daysLeft = Math.ceil((etaDate - startDateDate) / (1000 * 60 * 60 * 24));
+        const todayDate = new Date();
+        const daysLeft = Math.ceil((etaDate - todayDate) / (1000 * 60 * 60 * 24));
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td data-category="${task.category}">${task.name}</td>
-                        <td><select class="edit-priority" data-id="${task.id}">
-                            <option value="Critical" ${task.priority === "Critical" ? "selected" : ""}>Critical</option>
-                            <option value="High" ${task.priority === "High" ? "selected" : ""}>High</option>
-                            <option value="Medium" ${task.priority === "Medium" ? "selected" : ""}>Medium</option>
-                            <option value="Low" ${task.priority === "Low" ? "selected" : ""}>Low</option>
-                        </select></td>
-                        <td class="days-left">${daysLeft} days</td>
-                        <td>${task.startDate}</td>
-                        <td><input type="date" value="${task.eta}" data-id="${task.id}" class="edit-eta"></td>
-                        <td><button class="mark-complete" data-id="${task.id}">Mark as Complete</button> <button class="delete-task" data-id="${task.id}">Delete</button></td>`;
+        // Optional: Add a class based on category as well
+        if (task.category === "Finance") {
+          tr.classList.add("task-category-finance");
+        } else if (task.category === "Health & Fitness") {
+          tr.classList.add("task-category-health-and-fitness");
+        } else if (task.category === "Travel & Adventure") {
+          tr.classList.add("task-category-travel-and-adventure");
+        } else if (task.category === "Relationships") {
+          tr.classList.add("task-category-relationships");
+        } else if (task.category === "Home & Living") {
+          tr.classList.add("task-category-home-and-living");
+        } else if (task.category === "Personal Projects") {
+          tr.classList.add("task-category-personal-projects");
+        } else if (task.category === "Learning & Curiosity") {
+          tr.classList.add("task-category-learning-and-curiosity");
+        } else if (task.category === "Entertainment") {
+          tr.classList.add("task-category-entertainment");
+        } else if (task.category === "Spiritual Growth") {
+          tr.classList.add("task-category-spiritual-growth");
+        }
+        // Determine if the task name should be highlighted
+        const highlightClass = daysLeft <= 3 ? "task-name-highlight" : "";
+        tr.innerHTML = `<td data-category="${task.category}" class="task-name ${highlightClass}">${task.name}</td>
+        <td><select class="edit-priority" data-id="${task.id}">
+            <option value="Critical" ${task.priority === "Critical" ? "selected" : ""}>Critical</option>
+            <option value="High" ${task.priority === "High" ? "selected" : ""}>High</option>
+            <option value="Medium" ${task.priority === "Medium" ? "selected" : ""}>Medium</option>
+            <option value="Low" ${task.priority === "Low" ? "selected" : ""}>Low</option>
+        </select></td>
+        <td class="days-left">${daysLeft} days</td>
+        <td>${formatDate(task.startDate)}</td> 
+        <td><input type="date" value="${task.eta}" data-id="${task.id}" class="edit-eta"></td>
+        <td><button class="mark-complete" data-id="${task.id}">Completed!</button> <button class="delete-task" data-id="${task.id}">Delete</button></td>`;
+
         tbody.appendChild(tr);
       }
     });
@@ -195,13 +237,13 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
     input.addEventListener("change", async (e) => {
       const taskId = e.target.getAttribute("data-id");
       const newETA = e.target.value;
-      const confirmation = confirm(`Are you sure you want to change the ETA to ${newETA}?`);
+      const confirmation = confirm(`Are you sure you want to change the End Date to ${newETA}?`);
       if (!confirmation) return;
       try {
         await updateDoc(doc(db, "tasks", taskId), {
           eta: newETA
         });
-        console.log("ETA updated successfully!");
+        console.log("End Date updated successfully!");
 
         // Update the Days Left dynamically
         const tr = e.target.closest("tr");
@@ -211,7 +253,7 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
         const daysLeft = Math.ceil((etaDate - startDateDate) / (1000 * 60 * 60 * 24));
         tr.querySelector(".days-left").textContent = `${daysLeft} days`;
       } catch (error) {
-        console.error("Error updating ETA: ", error);
+        console.error("Error updating End Date: ", error);
       }
     });
   });
@@ -298,11 +340,46 @@ function loadCompletedTasks() {
       completedTasks.forEach((task) => {
         // Format the completed date using toLocaleDateString()
         const formattedCompletedDate = new Date(task.completedDate).toLocaleDateString();
-        table += `<tr>
+        const formattedStartDate = formatDate(task.startDate);
+
+        // Determine category class
+        let categoryClass = "";
+        switch (task.category) {
+          case "Finance":
+            categoryClass = "task-category-finance";
+            break;
+          case "Health & Fitness":
+            categoryClass = "task-category-health-and-fitness";
+            break;
+          case "Travel & Adventure":
+            categoryClass = "task-category-travel-and-adventure";
+            break;
+          case "Relationships":
+            categoryClass = "task-category-relationships";
+            break;
+          case "Home & Living":
+            categoryClass = "task-category-home-and-living";
+            break;
+          case "Personal Projects":
+            categoryClass = "task-category-personal-projects";
+            break;
+          case "Learning & Curiosity":
+            categoryClass = "task-category-learning-and-curiosity";
+            break;
+          case "Entertainment":
+            categoryClass = "task-category-entertainment";
+            break;
+          case "Spiritual Growth":
+            categoryClass = "task-category-spiritual-growth";
+            break;
+        }
+
+        // Apply the category class to the row
+        table += `<tr class="${categoryClass}">
                     <td>${task.name}</td>
                     <td>${task.category}</td>
                     <td>${task.priority}</td>
-                    <td>${task.startDate}</td>
+                    <td>${formattedStartDate}</td>
                     <td>${formattedCompletedDate}</td>
                   </tr>`;
       });
@@ -314,6 +391,7 @@ function loadCompletedTasks() {
     }
   });
 }
+
 
 // Function to update the summary table with pending tasks count
 function updateSummary() {
@@ -336,8 +414,48 @@ function updateSummary() {
 
     sortedCategories.forEach((category) => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${category}</td><td>${tasksByCategory[category]}</td>`;
+
+      // Determine category class
+      let categoryClass = "";
+      switch (category) {
+        case "Finance":
+          categoryClass = "task-category-finance";
+          break;
+        case "Health & Fitness":
+          categoryClass = "task-category-health-and-fitness";
+          break;
+        case "Travel & Adventure":
+          categoryClass = "task-category-travel-and-adventure";
+          break;
+        case "Relationships":
+          categoryClass = "task-category-relationships";
+          break;
+        case "Home & Living":
+          categoryClass = "task-category-home-and-living";
+          break;
+        case "Personal Projects":
+          categoryClass = "task-category-personal-projects";
+          break;
+        case "Learning & Curiosity":
+          categoryClass = "task-category-learning-and-curiosity";
+          break;
+        case "Entertainment":
+          categoryClass = "task-category-entertainment";
+          break;
+        case "Spiritual Growth":
+          categoryClass = "task-category-spiritual-growth";
+          break;
+      }
+
+      // Apply the category class to the row
+      tr.classList.add(categoryClass);
+
+      tr.innerHTML = `<td>${category}</td><td style="text-align: center;">${tasksByCategory[category]}</td>`;
       summaryBody.appendChild(tr);
     });
+
+    // Ensure the summary table uses the new class
+    const summaryTable = document.getElementById("summary-table");
+    summaryTable.classList.add("summary-table");
   });
 }
