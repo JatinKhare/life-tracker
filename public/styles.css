@@ -106,7 +106,7 @@ button:active {
 }
 
 .task-table th {
-  background-color: #dae5f9;
+  background-color: #d8f0ff;
   color: black;
   padding: 12px;
   text-align: left;
@@ -172,7 +172,7 @@ button:active {
 
 .summary-table th, .summary-table td {
   padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid hsl(0, 0%, 88%);
   text-align: left;
 }
 
@@ -253,7 +253,7 @@ button {
 
 /* Background colors for each task category */
 .task-category-finance {
-  background-color: #fa9aff; /* Light blue for Finance category */
+  background-color: #f4b9f7; /* Light blue for Finance category */
 }
 
 .task-category-health-and-fitness {
@@ -261,11 +261,11 @@ button {
 }
 
 .task-category-travel-and-adventure {
-  background-color: #96fffd; /* Light orange for Travel & Adventure category */
+  background-color: #bfd3fd; /* Light orange for Travel & Adventure category */
 }
 
 .task-category-relationships {
-  background-color: #ffccd5; /* Light pink for Relationships category */
+  background-color: #cdcaff; /* Light pink for Relationships category */
 }
 
 .task-category-home-and-living {
@@ -273,11 +273,11 @@ button {
 }
 
 .task-category-personal-projects {
-  background-color: #ffffff; /* Light sky blue for Personal Projects category */
+  background-color: #e9e9e9; /* Light sky blue for Personal Projects category */
 }
 
 .task-category-learning-and-curiosity {
-  background-color: #fef9c3; /* Light yellow for Learning & Curiosity category */
+  background-color: #f5ffe8; /* Light yellow for Learning & Curiosity category */
 }
 
 .task-category-entertainment {
@@ -285,7 +285,7 @@ button {
 }
 
 .task-category-spiritual-growth {
-  background-color: #789ccc; /* Light blue-gray for Spiritual Growth category */
+  background-color: #ffebbf; /* Light blue-gray for Spiritual Growth category */
 }
 
 /* Add borders to all task tables */
@@ -295,14 +295,14 @@ button {
 
 .task-table th, .task-table td,
 .summary-table th, .summary-table td {
-  border: 1px solid #ccc; /* Add borders between cells */
+  border: 1px solid #000000; /* Add borders between cells */
   padding: 12px; /* Keep the padding for better spacing */
   vertical-align: middle; /* Ensure cell content is vertically aligned in the middle */
 }
 
-.task-table td.task-name {
+/*.task-table td.task-name {
   font-weight: bold;
-}
+}*/
 
 #button-container {
   display: flex;

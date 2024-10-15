@@ -31,8 +31,34 @@ startDateInput.value = today;
 
 const etaInput = document.getElementById("taskETA");
 const FiveDaysFromNow = new Date();
-FiveDaysFromNow.setDate(FiveDaysFromNow.getDate() + 5);
+FiveDaysFromNow.setDate(FiveDaysFromNow.getDate() + 7);
 etaInput.value = FiveDaysFromNow.toISOString().split('T')[0];
+
+document.getElementById("priority").addEventListener("change", (e) => {
+  const selectedPriority = e.target.value;
+  let newETA = new Date();
+  
+  switch (selectedPriority) {
+    case "Critical":
+      newETA.setDate(newETA.getDate() + 2);
+      break;
+    case "High":
+      newETA.setDate(newETA.getDate() + 5);
+      break;
+    case "Medium":
+      newETA.setDate(newETA.getDate() + 7);
+      break;
+    case "Low":
+      newETA.setDate(newETA.getDate() + 10);
+      break;
+    default:
+      newETA.setDate(newETA.getDate() + 7); // Default to 7 days if none selected
+      break;
+  }
+
+  document.getElementById("taskETA").value = newETA.toISOString().split('T')[0];
+});
+
 
 
 // Form submission handling
@@ -140,7 +166,7 @@ onSnapshot(collection(db, "tasks"), (snapshot) => {
   taskSections.innerHTML = "";
 
   const categories = [
-    "Finance", "Travel & Adventure", "Relationships", "Chess Practice",
+    "Finance", "Travel & Adventure", "Relationships",
     "Home & Living", "Personal Projects", "Learning & Curiosity",
     "Health & Fitness", "Entertainment", "Spiritual Growth"
   ];
