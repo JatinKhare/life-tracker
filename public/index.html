@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Life Task Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Daily Life Task Tracker</h2>
+    
+    <!-- Task Input Form -->
+    <form id="task-form">
+      <!-- Task Name -->
+      <div class="form-group">
+        <label for="taskName">Task Name:</label>
+        <input type="text" id="taskName" placeholder="Task Name" required>
+      </div>
+
+      <!-- Category Dropdown -->
+      <div class="form-group">
+        <label for="taskCategory">Category:</label>
+        <select id="taskCategory">
+          <option value="" disabled selected>Select Category</option>
+          <option value="Finance">Finance</option>
+          <option value="Travel & Adventure">Travel & Adventure</option>
+          <option value="Relationships">Relationships</option>
+          <option value="Chess Practice">Chess Practice</option>
+          <option value="Home & Living">Home & Living</option>
+          <option value="Personal Projects">Personal Projects</option>
+          <option value="Learning & Curiosity">Learning & Curiosity</option>
+          <option value="Health & Fitness">Health & Fitness</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Spiritual Growth">Spiritual Growth</option>
+        </select>
+      </div>
+
+      <!-- Priority Dropdown -->
+      <div class="form-group">
+        <label for="priority">Priority:</label>
+        <select id="priority">
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+
+      <!-- ETA Input -->
+      <div class="form-group">
+        <label for="taskETA">ETA:</label>
+        <input type="date" id="taskETA" placeholder="ETA">
+      </div>
+
+      <!-- Start Date -->
+      <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" placeholder="Start Date">
+      </div>
+
+      <button type="submit"><i class="fas fa-save"></i> Save Task</button>
+    </form>
+
+    <!-- Show Tasks and Hide Tasks Buttons -->
+    <button id="show-tasks-button">Show Tasks</button>
+    <button id="hide-tasks-button" style="display: none;">Hide Tasks</button>
+
+    <!-- Task List Section -->
+    <div id="task-list" class="task-sections" style="display: none;"></div>
+
+    <!-- Add the buttons to show/hide completed tasks -->
+    <button id="show-completed-button">Show Completed Tasks</button>
+    <button id="hide-completed-button" style="display: none;">Hide Completed Tasks</button>
+
+    <!-- Completed Tasks History Section -->
+    <div id="completed-task-section" style="display: none;">
+      <h3>Completed Tasks History</h3>
+      <div id="completed-task-list" class="task-sections"></div>
+    </div>
+
+    <!-- Add the buttons to show/hide summary -->
+    <button id="show-summary-button">Show Summary</button>
+    <button id="hide-summary-button" style="display: none;">Hide Summary</button>
+
+    <!-- Summary Section -->
+    <div id="summary-section" class="task-sections" style="display: none;">
+      <h3>Task Summary</h3>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Pending Tasks</th>
+          </tr>
+        </thead>
+        <tbody id="summary-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase and Script Integration -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <script src="script.js" type="module"></script>
+</body>
+</html>
